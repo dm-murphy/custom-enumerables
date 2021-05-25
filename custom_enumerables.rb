@@ -39,6 +39,65 @@ module Enumerable
     array
   end
 
+  def my_all?
+    array = []
+    counter = 0
+
+    loop do
+      break if counter == self.length
+
+      value = yield self[counter]
+      array.push(value)
+      counter += 1
+    end
+
+    all_truthy_array = array.my_select { |val| val }
+    all_truthy_array.length == self.length
+  end
+
+  def my_any?
+    array = []
+    counter = 0
+
+    loop do
+      break if counter == self.length
+
+      value = yield self[counter]
+      array.push(value)
+      counter += 1
+    end
+
+    any_truthy_array = array.my_select { |val| val }
+    any_truthy_array.length.positive?
+  end
+
+  def my_none?
+    array = []
+    counter = 0
+
+    loop do
+      break if counter == self.length
+
+      value = yield self[counter]
+      array.push(value)
+      counter += 1
+    end
+
+    no_truthy_array = array.my_select { |val| val }
+    no_truthy_array.length.zero?
+  end
+
+  def my_count(arg = nil, &my_block)
+    if block_given?
+      my_select(&my_block).length
+    elsif arg.nil?
+      self.length
+    else
+      truthy_array = self.my_select { |val| val == arg }
+      truthy_array.length
+    end
+  end
+
 end
 
 puts "my_each vs. each"
@@ -61,3 +120,37 @@ p numbers.my_select { |num| num.even? }
 puts
 p numbers.select { |num| num.even? }
 
+puts "my_all? vs all?"
+numbers = [1, 2, 3, 4, 5]
+p numbers.my_all? { |num| num > 0 }
+puts
+p numbers.all? { |num| num > 0 }
+puts
+
+puts "my_any? vs any?"
+numbers = [1, 2, 3, 4, 5]
+p numbers.my_any? { |num| num > 4 }
+puts
+p numbers.any? { |num| num > 4 }
+puts
+
+puts "my_none? vs none?"
+numbers = [1, 2, 3, 4, 5]
+p numbers.my_none? { |num| num < 1 }
+puts
+p numbers.none? { |num| num < 1 }
+puts
+
+puts "my_count vs count"
+numbers = [1, 2, 3, 4, 5]
+p numbers.my_count
+puts
+p numbers.count
+puts
+p numbers.my_count { |num| num - 1 == 0 }
+puts
+p numbers.count { |num| num - 1 == 0 }
+puts
+p numbers.my_count(2)
+puts
+p numbers.count(2)
