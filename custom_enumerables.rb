@@ -98,6 +98,34 @@ module Enumerable
     end
   end
 
+  def my_map
+    array = []
+    counter = 0
+
+    loop do
+      break if counter == self.length
+
+      array.push(yield self[counter])
+      counter += 1
+    end
+    array
+  end
+
+  def my_inject(sum = 0)
+    counter = 0
+
+    loop do 
+      break if counter == self.length
+
+      sum = yield(sum, self[counter])
+      counter += 1
+    end
+    sum
+  end
+
+  def multiply_els
+    self.my_inject(1) { |sum, num| sum * num }
+  end
 end
 
 puts "my_each vs. each"
@@ -154,3 +182,32 @@ puts
 p numbers.my_count(2)
 puts
 p numbers.count(2)
+
+puts "my_map vs map"
+numbers = [1, 2, 3, 4, 5]
+p numbers.my_map { |num| num + 1 }
+puts
+p numbers.map { |num| num + 1 }
+puts
+
+puts "my_inject vs inject"
+numbers = [1, 2, 3, 4, 5]
+p numbers.my_inject { |sum, num| sum + num }
+puts
+p numbers.inject { |sum, num| sum + num }
+puts
+p numbers.my_inject(100) { |sum, num| sum + num }
+puts
+p numbers.inject(100) { |sum, num| sum + num }
+puts
+
+puts "mulitply_els"
+numbers = [2, 4, 5]
+p numbers.multiply_els
+
+puts "my_map with proc"
+numbers = [1, 2, 3, 4, 5]
+double = Proc.new { |n| n * 2 }
+p numbers.my_map(&double)
+puts
+p numbers.map(&double)
